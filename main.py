@@ -61,6 +61,31 @@ class SubnetPlanner:
         self._calculate_topology()
 
     def _calculate_topology(self):
+        """Applies raw boolean filters to locate the exact subnet boundaries."""
+        # Network Address: IP bitwise-AND Mask
+        self.network_int = self.ip.as_int & self.mask_int
+        self.network_address = IPv4Address.from_int(self.network_int)
+
+        # Broadcast Address: IP bitwise-OR Inverted Mask
+        inverted_mask = ~self.mask_int & 0xFFFFFFFF
+        self.broadcast_int = self.ip.as_int | inverted_mask
+        self.broadcast_address = IPv4Address.from_int(self.broadcast_int)
+
+        # Handle unique infrastructure edge cases (/31 point-to-point and /32 host loops)
+        if self.cidr == 32:
+            self.total_hosts = 1
+            self.first_usable = self.network_address
+            self.last_usable = self.network_address
+        elif self.cidr == 31:
+            self.total_hosts = 2
+            self.first_usable = self.network_address
+            self.last_usable = self.broadcast_address
+        else:
+            # Standard subnets follow the (2^(32-CIDR)) - 2 framework
+            self.total_hosts = (2 ** (32 - self.cidr)) - 2
+            self.first_usable = IPv4Address.from_int(self.network_int + 1)
+            self.last_usable = IPv4Address.from_int(self.broadcast_int - 1)
+
 
 def main():
     if len(sys.argv) > 1:
