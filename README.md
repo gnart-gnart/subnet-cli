@@ -10,5 +10,5 @@ are 32 bits long, that leaves 8 bits for the number of hosts.
 
 In this example, the first subnet would be `192.168.1` and the next one
 would be located at `192.168.21`. Each subnet would have 254 host addresses
-availabe, since 8 bits allows for 256 addresses, and one address is used for
+available, since 8 bits allows for 256 addresses, and one address is used for
 the network address and another is used for the broadcast address (`256 - 2`).
