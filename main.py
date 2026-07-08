@@ -42,6 +42,26 @@ class IPv4Address:
     def __str__(self) -> str:
         return self.ip_str
 
+
+class SubnetPlanner:
+    """Executes the bitwise logic gates to discover network boundaries and capacity."""
+
+    def __init__(self, ip: IPv4Address, cidr: int):
+        if not (0 <= cidr <= 32):
+            raise ValueError("CIDR prefix must be an integer between 0 and 32.")
+
+        self.ip = ip
+        self.cidr = cidr
+
+        # Calculate mask: Shift all 1s left by (32 - CIDR), then bound it to a 32-bit space
+        self.mask_int = (0xFFFFFFFF << (32 - cidr)) & 0xFFFFFFFF
+        self.subnet_mask = IPv4Address.from_int(self.mask_int)
+
+        # Trigger core structural calculations
+        self._calculate_topology()
+
+    def _calculate_topology(self):
+
 def main():
     if len(sys.argv) > 1:
         target_input = sys.argv[1]
