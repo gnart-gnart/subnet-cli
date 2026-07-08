@@ -61,7 +61,6 @@ class IPv4Address:
 
 class SubnetPlanner:
     """Executes the bitwise logic gates to discover network boundaries and capacity."""
-
     def __init__(self, ip: IPv4Address, cidr: int):
         if not (0 <= cidr <= 32):
             raise ValueError("CIDR prefix must be an integer between 0 and 32.")
@@ -75,19 +74,17 @@ class SubnetPlanner:
 
         # Trigger core structural calculations
         self._calculate_topology()
+        self._calculate_subnet_matrix()
 
     def _calculate_topology(self):
         """Applies raw boolean filters to locate the exact subnet boundaries."""
-        # Network Address: IP bitwise-AND Mask
         self.network_int = self.ip.as_int & self.mask_int
         self.network_address = IPv4Address.from_int(self.network_int)
 
-        # Broadcast Address: IP bitwise-OR Inverted Mask
         inverted_mask = ~self.mask_int & 0xFFFFFFFF
         self.broadcast_int = self.ip.as_int | inverted_mask
         self.broadcast_address = IPv4Address.from_int(self.broadcast_int)
 
-        # Handle unique infrastructure edge cases (/31 point-to-point and /32 host loops)
         if self.cidr == 32:
             self.total_hosts = 1
             self.first_usable = self.network_address
@@ -97,10 +94,23 @@ class SubnetPlanner:
             self.first_usable = self.network_address
             self.last_usable = self.broadcast_address
         else:
-            # Standard subnets follow the (2^(32-CIDR)) - 2 framework
             self.total_hosts = (2 ** (32 - self.cidr)) - 2
             self.first_usable = IPv4Address.from_int(self.network_int + 1)
             self.last_usable = IPv4Address.from_int(self.broadcast_int - 1)
+
+    def _calculate_subnet_matrix(self):
+        """Determines how many subnets of this size fit into its classful block."""
+        ip_class, default_prefix = self.ip.classful_info
+        self.ip_class = ip_class
+
+        if default_prefix is None:
+            self.available_subnets = "N/A (Special/Classless IP)"
+        elif self.cidr < default_prefix:
+            self.available_subnets = "N/A (Supernetted Network)"
+        else:
+            borrowed_bits = self.cidr - default_prefix
+            total_subnets = 2 ** borrowed_bits
+            self.available_subnets = f"{total_subnets:,}"
 
 
 def display_dashboard(planner: SubnetPlanner):
