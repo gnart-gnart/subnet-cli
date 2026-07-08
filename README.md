@@ -15,3 +15,9 @@ the network address and another is used for the broadcast address (`256 - 2`).
 
 CIDR stands for Classless Inter-Domain Routing. See more on its history here:
 [Understanding CIDR Notation in IP Subnets by Matthew Fisher](https://networkcalc.com/articles/cidr-notation/)
+
+## Calculating IP Ranges from CIDR
+It is helpful to convert IP addresses into 32-bit long binary.
+For example, `192.168.1.1` is `11000000 10101000 00000001 00000001`.
+The `/24` in the previous example makes the first 24 bits (first 3 groups
+of bits) into the network portion of the address. 
