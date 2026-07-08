@@ -87,6 +87,24 @@ class SubnetPlanner:
             self.last_usable = IPv4Address.from_int(self.broadcast_int - 1)
 
 
+def display_dashboard(planner: SubnetPlanner):
+    """Output Layer: Formats the calculated data cleanly into the terminal console."""
+    print("\n" + "=" * 45)
+    print(f" NETWORK TOPOLOGY REPORT FOR: {planner.ip}/{planner.cidr}")
+    print("=" * 45)
+    print(f"Subnet Mask       : {planner.subnet_mask}")
+    print(f"Network Address   : {planner.network_address}")
+    print(f"Broadcast Address : {planner.broadcast_address}")
+    print("-" * 45)
+
+    if planner.cidr >= 31:
+        print(f"Usable Host Range : {planner.first_usable} - {planner.last_usable} (Special Link Type)")
+    else:
+        print(f"Usable Host Range : {planner.first_usable} -> {planner.last_usable}")
+
+    print(f"Total Usable Hosts: {planner.total_hosts:,}")
+    print("=" * 45 + "\n")
+
 def main():
     if len(sys.argv) > 1:
         target_input = sys.argv[1]
