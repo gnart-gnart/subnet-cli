@@ -110,3 +110,26 @@ def main():
         target_input = sys.argv[1]
     else:
         target_input = input("Enter network block (e.g., 192.168.1.1/24): ")
+
+    try:
+        if "/" not in target_input:
+            raise ValueError("Input block must include a trailing slash and CIDR prefix (e.g., /24).")
+
+        ip_part, cidr_part = target_input.split("/", 1)
+
+        if not cidr_part.isdigit():
+            raise ValueError(f"CIDR value '{cidr_part}' must be a pure numerical value.")
+
+        # Instantiate data models and fire calculations
+        validated_ip = IPv4Address(ip_part)
+        completed_plan = SubnetPlanner(validated_ip, int(cidr_part))
+
+        # Route calculated data to standard output
+        display_dashboard(completed_plan)
+
+    except ValueError as err:
+        print(f"\n[!] Input Error: {err}\n", file=sys.stderr)
+        sys.exit(1)
+
+    if __name__ == "__main__":
+        main()
