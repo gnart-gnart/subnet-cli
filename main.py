@@ -29,6 +29,19 @@ class IPv4Address:
             octets.append(val)
         return octets
 
+    @classmethod
+    def from_int(cls, ip_int: int) -> "IPv4Address":
+        """Alternative constructor to instantiate an address from a 32-bit integer."""
+        # Unpack the integer back into dotted decimal notation via masking and shifting
+        octet1 = (ip_int >> 24) & 0xFF
+        octet2 = (ip_int >> 16) & 0xFF
+        octet3 = (ip_int >> 8) & 0xFF
+        octet4 = ip_int & 0xFF
+        return cls(f"{octet1}.{octet2}.{octet3}.{octet4}")
+
+    def __str__(self) -> str:
+        return self.ip_str
+
 def main():
     if len(sys.argv) > 1:
         target_input = sys.argv[1]
