@@ -29,10 +29,26 @@ class IPv4Address:
             octets.append(val)
         return octets
 
+    @property
+    def classful_info(self) -> tuple[str, int | None]:
+        """Returns a tuple of (Class Letter, Default Mask Prefix)."""
+        first = self.octets[0]
+        if 1 <= first <= 126:
+            return ("A", 8)
+        elif 128 <= first <= 191:
+            return ("B", 16)
+        elif 192 <= first <= 223:
+            return ("C", 24)
+        elif 224 <= first <= 239:
+            return ("D (Multicast)", None)
+        elif 240 <= first <= 255:
+            return ("E (Experimental)", None)
+        else:
+            return ("None/Loopback", None)
+
     @classmethod
     def from_int(cls, ip_int: int) -> "IPv4Address":
         """Alternative constructor to instantiate an address from a 32-bit integer."""
-        # Unpack the integer back into dotted decimal notation via masking and shifting
         octet1 = (ip_int >> 24) & 0xFF
         octet2 = (ip_int >> 16) & 0xFF
         octet3 = (ip_int >> 8) & 0xFF
