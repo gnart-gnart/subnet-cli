@@ -118,6 +118,7 @@ def display_dashboard(planner: SubnetPlanner):
     print("\n" + "=" * 45)
     print(f" NETWORK TOPOLOGY REPORT FOR: {planner.ip}/{planner.cidr}")
     print("=" * 45)
+    print(f"Detected IP Class : Class {planner.ip_class}")
     print(f"Subnet Mask       : {planner.subnet_mask}")
     print(f"Network Address   : {planner.network_address}")
     print(f"Broadcast Address : {planner.broadcast_address}")
@@ -129,31 +130,37 @@ def display_dashboard(planner: SubnetPlanner):
         print(f"Usable Host Range : {planner.first_usable} -> {planner.last_usable}")
 
     print(f"Total Usable Hosts: {planner.total_hosts:,}")
+    print(f"Available Subnets : {planner.available_subnets}")
     print("=" * 45 + "\n")
+
 
 def main():
     print("--- IPv4 Subnet Planner CLI ---")
-    target_input = input("Enter network block (e.g., 192.168.1.1/24): ")
 
     try:
-        if "/" not in target_input:
-            raise ValueError("Input block must include a trailing slash and CIDR prefix (e.g., /24).")
+        # Step 1: Prompt for and validate the target IP address baseline
+        raw_ip = input("Step 1: Enter base IP address (e.g., 192.168.1.50): ")
+        validated_ip = IPv4Address(raw_ip)
 
-        ip_part, cidr_part = target_input.split("/", 1)
+        # Display detected baseline info to confirm user input before proceeding
+        detected_class, _ = validated_ip.classful_info
+        print(f"   [Validated] Detected as a Class {detected_class} address space.")
 
-        if not cidr_part.isdigit():
-            raise ValueError(f"CIDR value '{cidr_part}' must be a pure numerical value.")
+        # Step 2: Prompt for the custom mask boundary length
+        raw_cidr = input("Step 2: Enter CIDR block suffix prefix (e.g., 24): ")
+        raw_cidr = raw_cidr.replace("/", "").strip()  # Strip out trailing slashes if typed out
 
-        # Instantiate data models and fire calculations
-        validated_ip = IPv4Address(ip_part)
-        completed_plan = SubnetPlanner(validated_ip, int(cidr_part))
+        if not raw_cidr.isdigit():
+            raise ValueError(f"CIDR prefix '{raw_cidr}' must be a pure numerical value.")
 
-        # Route calculated data to standard output
+        # Instantiate coordinator and pass objects down to display engine
+        completed_plan = SubnetPlanner(validated_ip, int(raw_cidr))
         display_dashboard(completed_plan)
 
     except ValueError as err:
         print(f"\n[!] Input Error: {err}\n", file=sys.stderr)
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()
