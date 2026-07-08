@@ -12,3 +12,6 @@ In this example, the first subnet would be `192.168.1` and the next one
 would be located at `192.168.21`. Each subnet would have 254 host addresses
 available, since 8 bits allows for 256 addresses, and one address is used for
 the network address and another is used for the broadcast address (`256 - 2`).
+
+CIDR stands for Classless Inter-Domain Routing. See more on its history here:
+[Understanding CIDR Notation in IP Subnets by Matthew Fisher](https://networkcalc.com/articles/cidr-notation/)
