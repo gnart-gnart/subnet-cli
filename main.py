@@ -106,10 +106,8 @@ def display_dashboard(planner: SubnetPlanner):
     print("=" * 45 + "\n")
 
 def main():
-    if len(sys.argv) > 1:
-        target_input = sys.argv[1]
-    else:
-        target_input = input("Enter network block (e.g., 192.168.1.1/24): ")
+    print("--- IPv4 Subnet Planner CLI ---")
+    target_input = input("Enter network block (e.g., 192.168.1.1/24): ")
 
     try:
         if "/" not in target_input:
@@ -131,5 +129,5 @@ def main():
         print(f"\n[!] Input Error: {err}\n", file=sys.stderr)
         sys.exit(1)
 
-    if __name__ == "__main__":
-        main()
+if __name__ == "__main__":
+    main()
