@@ -43,3 +43,7 @@ Total Usable Hosts: 30
 Available Subnets : 8
 =============================================
 ```
+
+## Project Background Info
+See this write-up explaining why and how I built this project:
+[Subnet CLI Project](grantoxford.com/project-subnet.html)
