@@ -13,6 +13,22 @@ class IPv4Address:
             | self.octets[3]
         )
 
+    def _validate_and_parse(self) -> list[int]:
+        """Validates that the IP string consists of 4 valid decimal octets."""
+        parts = self.ip_str.split(".")
+        if len(parts) != 4:
+            raise ValueError("IP address must contain exactly 4 octets separated by dots.")
+
+        octets = []
+        for part in parts:
+            if not part.isdigit():
+                raise ValueError(f"Invalid non-numeric character found in octet: '{part}'")
+            val = int(part)
+            if not (0 <= val <= 255):
+                raise ValueError(f"Octet value '{val}' is outside the valid 0-255 range.")
+            octets.append(val)
+        return octets
+
 def main():
     if len(sys.argv) > 1:
         target_input = sys.argv[1]
